@@ -1,5 +1,5 @@
 {
-  "name": "syngenta",
+  "name": "syngenta dashboard",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -11,7 +11,10 @@
   },
   "dependencies": {
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "@mui/material": "^6.4.8"
   },
   "devDependencies": {
     "@eslint/js": "^9.21.0",
