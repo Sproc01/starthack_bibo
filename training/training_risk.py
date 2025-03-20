@@ -53,20 +53,23 @@ learning_rate = 0.001
 optimizer = torch.optim.Adam(neural_network.parameters(), lr=learning_rate)
 criterion = nn.MSELoss()
 
+
+
 batch_size = 128
-for i in range(epochs):
-    dataset = np.load('dataset.npy')
-    indexes = torch.randperm(states.shape[0])[:min(batch_size, states.shape[0])]
-    x = dataset[indexes]
-    max_temp_weekly = x[:,:12]
-    min_temp_weekly = x[:,12:24]
-    y = RiskCalculator(max_temp_weekly, min_temp_weekly, opt_values['SoyBean'])
-    optimizer.zero_grad()
+input = data[:][0:2]
+output = data[:][2]
+for epoch in range(epochs):
+  optimizer.zero_grad()
+  for j in range(len(input), batch_size):
+    x = input[j:j+batch_size]
+    y = output[j:j+batch_size]
     x = torch.tensor(x, dtype=torch.float32)
     y = torch.tensor(y, dtype=torch.float32)
-    y_predicted = neural_network(y)
-    loss = criterion(y_predicted, y)
-    if i % 10 == 0:
-        print(f"Epochs:{i}, loss: {loss}")
-    loss.backward()
-    optimizer.step()
+    x = x.reshape(-1)
+    y_predicted = neural_network(x)
+    avg_loss += criterion(y_predicted, y)
+  avg_loss = avg_loss / batch_size
+  if epoch % 10 == 0:
+      print(f"Epochs:{epoch}, loss: {avg_loss}")
+  avg_loss.backward()
+  optimizer.step()

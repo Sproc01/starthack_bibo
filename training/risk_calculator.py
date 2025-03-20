@@ -25,3 +25,6 @@ def RiskCalculator(days_max, days_min, opt_values):
             avg_night_risk += 9
 
     return avg_risk_heat/len(days_max), avg_risk_frost/len(days_min), avg_night_risk/len(days_min)
+
+def droughtRiskCalculator(cumulative_precipitation, cumulative_evapotranspiration, soil_moistrue, avg_temp):
+    return (cumulative_precipitation - cumulative_evapotranspiration) + soil_moistrue / avg_temp
