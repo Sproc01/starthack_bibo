@@ -1,6 +1,9 @@
 import { useState } from 'react'
 import './App.css'
 
+import Gauges from './components/Gauges';
+import Alerts from './components/Alerts';
+
 import { Grid2, AppBar, Toolbar, Typography, Container, Paper } from '@mui/material';
 
 function Navbar() {
@@ -15,17 +18,6 @@ function Navbar() {
   );
 }
 
-function LeftComponent() {
-  return (
-    <>Left</>
-  );
-}
-
-function RightComponent() {
-  return (
-    <>Right</>
-  );
-}
 
 function App() {
   return (
@@ -34,10 +26,10 @@ function App() {
       <Container maxWidth={false} sx={{ marginTop: 4 }}>
         <Grid2 container spacing={2}>
           <Grid2 size={{ xs: 12, sm: 9}}>
-            <LeftComponent />
+            <Gauges />
           </Grid2>
           <Grid2 size={{ xs: 12, sm: 3 }}>
-            <RightComponent />
+            <Alerts />
           </Grid2>
         </Grid2>
       </Container>
