@@ -25,10 +25,10 @@ function App() {
       <Navbar />
       <Container maxWidth={false} sx={{ marginTop: 4 }}>
         <Grid2 container spacing={2}>
-          <Grid2 size={{ xs: 12, sm: 9}}>
+          <Grid2 size={{ xs: 12, sm: 8}}>
             <Gauges />
           </Grid2>
-          <Grid2 size={{ xs: 12, sm: 3 }}>
+          <Grid2 size={{ xs: 12, sm: 4}}>
             <Alerts />
           </Grid2>
         </Grid2>
