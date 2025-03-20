@@ -6,6 +6,7 @@ from fastapi import HTTPException
 from enum import Enum
 
 import config as c
+from timed_cache import TimedCache, cached, CacheCategory
 
 
 class MeasureLabel(Enum):
@@ -39,6 +40,7 @@ async def retrieve_forecast_label(latitude: float, longitude: float, start_date:
         raise HTTPException(status_code=e.response.status_code, detail=str(e))
 
 
+@cached(TimedCache(), category=CacheCategory.WEATHER_FORECAST, ttl_seconds=3600)
 async def retrieve_all_forecast_data(latitude: float, longitude: float, start_date: str):
     retrieve_tasks = []
 

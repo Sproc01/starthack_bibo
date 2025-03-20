@@ -13,3 +13,8 @@ FORECAST_DAYS = 8  # Today and a week after
 # Position
 SORRISO_LATITUDE = -12.5471531
 SORRISO_LONGITUDE = -55.7319178
+
+# Uvicorn
+HOST = "0.0.0.0"
+PORT = 8123
+DEBUG_MODE = True
