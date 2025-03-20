@@ -2,7 +2,7 @@ from typing import List, Iterator, Tuple
 from pathlib import Path
 import sqlite3
 import numpy as np
-from risk_calculator import riskCalculator
+from risk_calculator import riskCalculator, droughtRiskCalculator
 
 def get_meteoblue_data_historical_forecast_from_sqlite(
     db_path: str | Path,
@@ -196,69 +196,171 @@ def get_meteobluedata_with_risk_numpy(
 
         yield historical_data, forecast_data, risk_data
 
+def get_last30_days_sum(db_path: str | Path) -> tuple[List[float], List[float], List[float], List[float]]:
+    """
+    Recupera e somma i valori di evaporation_sum, rainfall_sum, soil_moisture_avg e temp_avg
+    per gli ultimi 30 giorni dalla tabella bibo_data del database SQLite.
+
+    Args:
+        db_path: Path al file del database SQLite.
+    
+    Returns:
+        Una tupla contenente le somme nell'ordine:
+        (evaporation_sum, rainfall_sum, soil_moisture_avg, temp_avg)
+    """
+    # Connessione al database SQLite
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+
+    # Seleziona gli ultimi 30 record ordinati in base al rowid (si assume che rowid più alto corrisponda a date recenti)
+    query = """
+    SELECT evaporation_sum, rainfall_sum, soil_moisture_avg, temp_avg
+    FROM bibo_data
+    ORDER BY rowid ASC
+    """
+    cursor.execute(query)
+    rows = cursor.fetchall()
+    conn.close()
+
+    # Inizializza le somme
+    evaporation_total = 0.0
+    rainfall_total = 0.0
+    soil_moisture_total = 0.0
+    temp_total = 0.0
+
+    sum_evaporation_past = []
+    sum_rainfall_past = []
+    sum_soil_moisture_past = []
+    sum_temp_past = []
+    forecast = []
+    sum_evaporation_present = []
+    sum_rainfall_present = []
+    sum_soil_moisture_present = []
+    sum_temp_present = []
+
+    val = 0
+    # Somma ogni colonna (gestendo eventuali valori None)
+    for i in range(23, len(rows)-84, 7):
+        prediction = []
+        for j in range(0, 23):
+            row = rows[i-j]
+            evaporation_total += row[0] if row[0] is not None else 0.0
+            rainfall_total += row[1] if row[1] is not None else 0.0
+            soil_moisture_total += row[2] if row[2] is not None else 0.0
+            temp_total += row[3] if row[3] is not None else 0.0
+        sum_evaporation_past.append(evaporation_total)
+        sum_rainfall_past.append(rainfall_total)
+        sum_soil_moisture_past.append(soil_moisture_total)
+        sum_temp_past.append(temp_total)
+        evaporation_total = 0.0
+        rainfall_total = 0.0
+        soil_moisture_total = 0.0
+        temp_total = 0.0
+        for j in range(0, 7):
+            row = rows[i+j]
+            evaporation_total += row[0] if row[0] is not None else 0.0
+            rainfall_total += row[1] if row[1] is not None else 0.0
+            soil_moisture_total += row[2] if row[2] is not None else 0.0
+            temp_total += row[3] if row[3] is not None else 0.0
+        sum_evaporation_present.append(evaporation_total)
+        sum_rainfall_present.append(rainfall_total)
+        sum_soil_moisture_present.append(soil_moisture_total)
+        sum_temp_present.append(temp_total)
+
+        for j in range(7, 85):
+            row = rows[j+i]
+            evaporation_total += row[0] if row[0] is not None else 0.0
+            rainfall_total += row[1] if row[1] is not None else 0.0
+            soil_moisture_total += row[2] if row[2] is not None else 0.0
+            temp_total += row[3] if row[3] is not None else 0.0
+            risk = droughtRiskCalculator(evaporation_total, rainfall_total, soil_moisture_total, temp_total)
+            if risk > 1:
+                val += 0
+            elif risk == 1:
+                val += 0.5
+            else:
+                val += 1
+            if j % 7 == 0:
+                prediction.append(val/7)
+                val = 0
+        forecast.append(prediction)
+        prediction = []
+
+
+    return sum_evaporation_past, sum_rainfall_past, sum_soil_moisture_past, sum_temp_past, sum_evaporation_present, sum_rainfall_present, sum_soil_moisture_present, sum_temp_present, forecast
+
+
 if __name__ == "__main__":
     db_path = "stress_buster_data.db"
-    try:
+    # Get the last 30 days sum
+    res = get_last30_days_sum(db_path)
+    print(res[0][0])
+    print(res[1][0])
+    print(res[2][0])
+    print(res[3][0])
+    print(res[4][0])
+
+    #try:
         # Get the first few examples to verify it works
-        for i, (two_year_data, next_days, risk_values) in enumerate(
-            get_meteobluedata_with_risk(
-                db_path,
-                "Corn",
-                "temp_max"
-            )
-        ):
-            print(f"Example {i+1}:")
-            print(f"Two-year data length: {len(two_year_data)} days")
-            print(f"First day: {two_year_data[0]:.2f}")
-            print(f"Last day: {two_year_data[-1]:.2f}")
+    #     for i, (two_year_data, next_days, risk_values) in enumerate(
+    #         get_meteobluedata_with_risk(
+    #             db_path,
+    #             "Corn",
+    #             "temp_max"
+    #         )
+    #     ):
+    #         print(f"Example {i+1}:")
+    #         print(f"Two-year data length: {len(two_year_data)} days")
+    #         print(f"First day: {two_year_data[0]:.2f}")
+    #         print(f"Last day: {two_year_data[-1]:.2f}")
 
-            print(f"Next 8 days (including today):")
-            for j, value in enumerate(next_days):
-                if j == 0:
-                    print(f"  Today: {value:.2f}")
-                else:
-                    print(f"  Day +{j}: {value:.2f}")
+    #         print(f"Next 8 days (including today):")
+    #         for j, value in enumerate(next_days):
+    #             if j == 0:
+    #                 print(f"  Today: {value:.2f}")
+    #             else:
+    #                 print(f"  Day +{j}: {value:.2f}")
 
-            print(f"Risk values: Heat risk: {risk_values[0]:.2f}, Frost risk: {risk_values[1]:.2f}, Night risk: {risk_values[2]:.2f}")
+    #         print(f"Risk values: Heat risk: {risk_values[0]:.2f}, Frost risk: {risk_values[1]:.2f}, Night risk: {risk_values[2]:.2f}")
 
-            # Just show one example
-            if i >= 0:
-                break
+    #         # Just show one example
+    #         if i >= 0:
+    #             break
 
-        # Calculate total number of data points available
-        total_examples = sum(1 for _ in get_meteobluedata_with_risk(
-            db_path,
-            "Corn",
-            "temp_max"
-        ))
-        print(f"Total number of 2-year chunks available from SQLite: {total_examples}")
+    #     # Calculate total number of data points available
+    #     total_examples = sum(1 for _ in get_meteobluedata_with_risk(
+    #         db_path,
+    #         "Corn",
+    #         "temp_max"
+    #     ))
+    #     print(f"Total number of 2-year chunks available from SQLite: {total_examples}")
 
-        # Test the numpy version
-        # TODO not completely working
-        print("Testing numpy-based temperature data retrieval:")
-        for i, data_array in enumerate(get_meteobluedata_with_risk_numpy(db_path, "Corn")):
-            historical_data = data_array[0]  # Shape: (730, 2)
-            forecast_data = data_array[1]    # Shape: (8, 2)
-            risk_values = data_array[2]      # Shape: (3,)
+    #     # Test the numpy version
+    #     # TODO not completely working
+    #     print("Testing numpy-based temperature data retrieval:")
+    #     for i, data_array in enumerate(get_meteobluedata_with_risk_numpy(db_path, "Corn")):
+    #         historical_data = data_array[0]  # Shape: (730, 2)
+    #         forecast_data = data_array[1]    # Shape: (8, 2)
+    #         risk_values = data_array[2]      # Shape: (3,)
 
-            print(f"Example {i+1}:")
-            print(f"Historical data shape: {historical_data.shape}")
-            print(f"First day min/max: {historical_data[0][0]:.2f}/{historical_data[0][1]:.2f}")
-            print(f"Last day min/max: {historical_data[-1][0]:.2f}/{historical_data[-1][1]::.2f}")
+    #         print(f"Example {i+1}:")
+    #         print(f"Historical data shape: {historical_data.shape}")
+    #         print(f"First day min/max: {historical_data[0][0]:.2f}/{historical_data[0][1]:.2f}")
+    #         print(f"Last day min/max: {historical_data[-1][0]:.2f}/{historical_data[-1][1]::.2f}")
 
-            print(f"Forecast data shape: {forecast_data.shape}")
-            print(f"Today min/max: {forecast_data[0][0]:.2f}/{forecast_data[0][1]:.2f}")
+    #         print(f"Forecast data shape: {forecast_data.shape}")
+    #         print(f"Today min/max: {forecast_data[0][0]:.2f}/{forecast_data[0][1]:.2f}")
 
-            print(f"Risk values: {risk_values}")
-            print(f"Heat risk: {risk_values[0]:.2f}, Frost risk: {risk_values[1]:.2f}, Night risk: {risk_values[2]:.2f}")
+    #         print(f"Risk values: {risk_values}")
+    #         print(f"Heat risk: {risk_values[0]:.2f}, Frost risk: {risk_values[1]:.2f}, Night risk: {risk_values[2]:.2f}")
 
-            # Just show one example
-            if i >= 0:
-                break
+    #         # Just show one example
+    #         if i >= 0:
+    #             break
 
-        total_examples = sum(1 for _ in get_meteobluedata_with_risk_numpy(db_path, "Corn"))
-        print(f"Total number of 3D arrays available: {total_examples}")
+    #     total_examples = sum(1 for _ in get_meteobluedata_with_risk_numpy(db_path, "Corn"))
+    #     print(f"Total number of 3D arrays available: {total_examples}")
 
-    except Exception as e:
-        print(f"Error testing function: {e}")
+    # except Exception as e:
+    #     print(f"Error testing function: {e}")
 
