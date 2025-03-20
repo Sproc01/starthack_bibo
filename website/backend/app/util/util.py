@@ -1,5 +1,6 @@
 import threading
 
+
 # Thread-safe singleton metaclass
 class SingletonMeta(type):
     _instances = {}

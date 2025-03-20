@@ -28,5 +28,3 @@ class NN_temp_stress(nn.Module):
 
     def load(self, path):
         torch.load_state_dict(torch.load(path))
-
-

@@ -14,12 +14,11 @@ def get_historical_weather_last_days(num_days: int) -> pd.DataFrame:
     historical_df = resources.get_historical_weather_df()
 
     current_date = datetime.now()
-    date_n_days_ago = current_date - timedelta(days=(num_days+1))  # All dates start at midnight
+    date_n_days_ago = current_date - timedelta(days=(num_days + 1))  # All dates start at midnight
     print(date_n_days_ago)
     return historical_df.loc[historical_df["date"] >= date_n_days_ago]
 
 
-# TODO
 @cached(TimedCache(), category=CacheCategory.TEMP_STRESS_PREDICTION, ttl_seconds=12 * 3600)
 def predict_temperature_stress(crop: str, forecast_df: pd.DataFrame) -> torch.Tensor:
     # Get historical data
