@@ -1,12 +1,10 @@
-import numpy as np
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 
 
-class NN_risk(nn.Module):
+class NN_temp_stress(nn.Module):
     def __init__(self, input_size, output_size, device):
-        super(NN_risk, self).__init__()
+        super(NN_temp_stress, self).__init__()
         self.fc1 = nn.Linear(input_size, 512)
         self.ac1 = nn.ReLU()
         self.fc2 = nn.Linear(512, 256)

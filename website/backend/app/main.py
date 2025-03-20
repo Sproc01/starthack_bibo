@@ -4,7 +4,7 @@ from fastapi import FastAPI, HTTPException, status, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from util.util import GlobalResources
+from util.load_resources import GlobalResources
 import config as c
 from retrieve_forecast import retrieve_all_forecast_data
 from neural_networks.predict_stress import predict_temperature_stress, predict_drought_stress
@@ -15,16 +15,9 @@ app = FastAPI(
     version="1.0.0",
 )
 
-# TODO
-# CORS configuration
-origins = [
-    "http://localhost:3000",  # For local development
-    # Add production domains here
-]
-
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE"],
     allow_headers=["*"],
@@ -78,16 +71,15 @@ async def get_forecast():
         )
 
 
-# TODO
-@app.get("/api/predict/temp_stress", tags=["Temperature Stress"])
-async def get_temperature_stress_prediction():
+@app.get("/api/predict/temp_stress/{crop}", tags=["Temperature Stress"])
+async def get_temperature_stress_prediction(crop: str):
     try:
         today = datetime.today().strftime("%Y-%m-%d")
         lat = c.SORRISO_LATITUDE
         lon = c.SORRISO_LONGITUDE
 
         weather_forecast_df = await retrieve_all_forecast_data(lat, lon, today)
-        return predict_temperature_stress("soybean", weather_forecast_df)
+        return predict_temperature_stress(crop, weather_forecast_df)
 
     except Exception as e:
         raise HTTPException(

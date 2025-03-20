@@ -4,7 +4,7 @@ import pandas as pd
 from datetime import datetime, timedelta
 
 import config as c
-from util.util import GlobalResources
+from util.load_resources import GlobalResources
 from util.timed_cache import TimedCache, cached, CacheCategory
 
 
@@ -13,18 +13,18 @@ def get_historical_weather_last_days(num_days: int) -> pd.DataFrame:
     resources = GlobalResources()
     historical_df = resources.get_historical_weather_df()
 
-    current_date = datetime.strptime("2024/12/12 00:00:00", "%Y/%m/%d %H:%M:%S") # datetime.now() # TODO
-    date_n_days_ago = current_date - timedelta(days=num_days)
-
-    return historical_df.loc[historical_df["date"] > date_n_days_ago][:num_days]#TODO
+    current_date = datetime.now()
+    date_n_days_ago = current_date - timedelta(days=(num_days+1))  # All dates start at midnight
+    print(date_n_days_ago)
+    return historical_df.loc[historical_df["date"] >= date_n_days_ago]
 
 
 # TODO
 @cached(TimedCache(), category=CacheCategory.TEMP_STRESS_PREDICTION, ttl_seconds=12 * 3600)
 def predict_temperature_stress(crop: str, forecast_df: pd.DataFrame) -> torch.Tensor:
     # Get historical data
-    historical_data = get_historical_weather_last_days(c.NUM_DAYS_TEMP_STRESS_PREDICTION+8)
-    combined_data = historical_data# pd.concat([historical_data, forecast_df], ignore_index=True) # TODO
+    historical_data = get_historical_weather_last_days(c.NUM_DAYS_TEMP_STRESS_PREDICTION)
+    combined_data = pd.concat([historical_data, forecast_df], ignore_index=True)
 
     resources = GlobalResources()
     temp_stress_model = resources.get_temp_stress_model(crop)
@@ -43,22 +43,22 @@ def predict_temperature_stress(crop: str, forecast_df: pd.DataFrame) -> torch.Te
     with torch.no_grad():
         stress_predictions = temp_stress_model(features_tensor_flat)
 
+    # The output tensor contains 3 values of stress for each of the 12 following weeks
     stress_data = {}
     for week in range(1, 13):
         start_index = (week - 1) * 3
         end_index = start_index + 3
 
-        if end_index <= len(stress_predictions):
-            week_data = stress_predictions[start_index:end_index]
-            avg_diurnal_stress = math.floor(week_data[0].item() * 10)
-            avg_frost_stress = math.floor(week_data[1].item() * 10)
-            avg_nighttime_stress = math.floor(week_data[2].item() * 10)
+        week_data = stress_predictions[start_index:end_index]
+        avg_diurnal_stress = math.floor(week_data[0].item() * 10)
+        avg_frost_stress = math.floor(week_data[1].item() * 10)
+        avg_nighttime_stress = math.floor(week_data[2].item() * 10)
 
-            stress_data[f"week_{week}"] = {
-                "avg_diurnal_stress": avg_diurnal_stress,
-                "avg_frost_stress": avg_frost_stress,
-                "avg_nighttime_stress": avg_nighttime_stress,
-            }
+        stress_data[f"week_{week}"] = {
+            "avg_diurnal_stress": avg_diurnal_stress,
+            "avg_frost_stress": avg_frost_stress,
+            "avg_nighttime_stress": avg_nighttime_stress,
+        }
 
     return stress_data
 
