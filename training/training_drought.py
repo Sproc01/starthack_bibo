@@ -2,7 +2,7 @@ from neural_network_drought import NN_drought
 import torch
 import numpy as np
 import torch.nn as nn
-from risk_calculator import RiskCalculator
+from risk_calculator import riskCalculator
 
 neural_network = NN_drought(1488, 12)
 epochs = 100

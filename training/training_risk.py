@@ -3,50 +3,7 @@ from neural_network_risk import NN_risk
 import torch
 import numpy as np
 import torch.nn as nn
-from risk_calculator import RiskCalculator
 
-opt_values = {
-    'SoyBean':{
-        'TMaxOptimum': 32,
-        'TMaxLimit': 45,
-        'TMinOptimum': 22,
-        'TMinLimit': 28,
-        'TMinNoFrost': 4,
-        'TMinFrost': -3
-    },
-    'Corn':{
-        'TMaxOptimum': 33,
-        'TMaxLimit': 44,
-        'TMinOptimum': 22,
-        'TMinLimit': 28,
-        'TMinNoFrost': 4,
-        'TMinFrost': -3
-    },
-    'Cotton':{
-        'TMaxOptimum': 32,
-        'TMaxLimit': 38,
-        'TMinOptimum': 20,
-        'TMinLimit': 25,
-        'TMinNoFrost': 4,
-        'TMinFrost': -3
-    },
-    'Rice':{
-        'TMaxOptimum': 32,
-        'TMaxLimit': 38,
-        'TMinOptimum': 22,
-        'TMinLimit': 28,
-        'TMinNoFrost': -float('inf'),
-        'TMinFrost': -float('inf')
-    },
-    'Wheat':{
-        'TMaxOptimum': 25,
-        'TMaxLimit': 32,
-        'TMinOptimum': 15,
-        'TMinLimit': 20,
-        'TMinNoFrost': -float('inf'),
-        'TMinFrost': -float('inf')
-    }
-}
 neural_network = NN_risk(1488, 3*12)
 epochs = 100
 learning_rate = 0.001
