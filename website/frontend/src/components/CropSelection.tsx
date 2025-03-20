@@ -23,7 +23,6 @@ function CropSelection() {
 				value={crop}
 				exclusive
 				onChange={handleChange}
-				aria-label="text alignment"
 				>
 				<ToggleButton value="soybean">
 					Soybean
