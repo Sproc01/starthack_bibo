@@ -28,12 +28,15 @@ DEBUG_MODE = True
 # Resources
 HISTORICAL_WEATHER_DB_PATH = "./resources/stress_buster_historical_data.db"
 TEMP_STRESS_MODEL_PATH_TEMPLATE = "./resources/temp_stress_models/temp_stress_model_{}.pth"
-DROUGHT_STRESS_MODEL_PATH_TEMPLATE = "./resources/drought_stress_models/drought_stress_model_{}.pth"
+DROUGHT_STRESS_MODEL_PATH_TEMPLATE = "./resources/drought_stress_model.pth"
 
 # Neural networks
 TEMP_STRESS_INPUT_SIZE = 1476  # Min and max temperatures for 2 years + 8 days
 TEMP_STRESS_OUTPUT_SIZE = 36  # 3 temperature stress for 12 weeks
 
+DROUGHT_STRESS_INPUT_SIZE = 8  # 4 values for historical and 4 for forecast
+DROUGHT_STRESS_OUTPUT_SIZE = 12  # Drought index for each of the 12 weeks
+
 # Prediction
 NUM_DAYS_TEMP_STRESS_PREDICTION = 2 * 365
-NUM_DAYS_DROUGHT_STRESS_PREDICTION = 90
+NUM_DAYS_DROUGHT_STRESS_PREDICTION = 30

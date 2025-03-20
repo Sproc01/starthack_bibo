@@ -7,6 +7,7 @@ from datetime import datetime, timedelta
 import crops
 import config as c
 from neural_networks.neural_network_temp_stress import NN_temp_stress
+from neural_networks.neural_network_drought_stress import NN_drought_stress
 from util.util import SingletonMeta
 
 
@@ -115,7 +116,7 @@ class GlobalResources(metaclass=SingletonMeta):
     def __init__(self):
         self.historical_weather_df = None
         self.temp_stress_models = {}
-        self.drought_stress_models = {}
+        self.drought_stress_model = None
         self._update_database()
         self._load_resources()
 
@@ -177,11 +178,11 @@ class GlobalResources(metaclass=SingletonMeta):
             model.eval()
             self.temp_stress_models[crop] = model
 
-            # TODO
-            # model = torch.load(c.DROUGHT_STRESS_MODEL_PATH_TEMPLATE.format(crop), map_location=device)
-            # model.to(device)
-            # model.eval()
-            # self.drought_stress_models[crop] = model
+        d_model = NN_drought_stress(c.DROUGHT_STRESS_INPUT_SIZE, c.DROUGHT_STRESS_OUTPUT_SIZE, device).to(device)
+        d_model_state_dict = torch.load(c.DROUGHT_STRESS_MODEL_PATH_TEMPLATE, map_location=device)
+        d_model.load_state_dict(d_model_state_dict)
+        d_model.eval()
+        self.drought_stress_model = d_model
 
     def get_historical_weather_df(self):
         return self.historical_weather_df
@@ -189,5 +190,5 @@ class GlobalResources(metaclass=SingletonMeta):
     def get_temp_stress_model(self, crop: str):
         return self.temp_stress_models[crop]
 
-    def get_drought_stress_model(self, crop: str):
-        return self.drought_stress_models[crop]
+    def get_drought_stress_model(self):
+        return self.drought_stress_model
