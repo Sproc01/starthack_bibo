@@ -3,12 +3,6 @@ import { useTheme } from '@mui/material/styles';
 import { Gauge, gaugeClasses  } from '@mui/x-charts/Gauge';
 import { Alert, Grid2, Paper} from '@mui/material';
 
-function getRandomInt(min: number,max: number) {
-    min = Math.ceil(min);
-    max = Math.floor(max);
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
 function convertRiskToGauges(risk: number) {
     let gauge = risk/9 * 100;
     return gauge;
@@ -70,10 +64,10 @@ function GaugeComponent({ risk, week_index }: { risk: number, week_index: number
     </div>
 }
 
-function monthGauges({mock_data, start_index }: {mock_data: number[], start_index: number}) {
+function monthGauges({stress, start_index }: {stress: number[], start_index: number}) {
     let list_of_gauges = []
     for(let i = start_index; i < start_index + 4; i++) {
-        let risk = mock_data[i];
+        let risk = stress[i];
         list_of_gauges.push(<Grid2 size={{ xs: 12, sm: 3 }} padding={2} minHeight={'200px'} height={'28vh'}>
             <GaugeComponent risk = {risk} week_index = {i}/>
         </Grid2>)
@@ -85,17 +79,14 @@ function monthGauges({mock_data, start_index }: {mock_data: number[], start_inde
     </Paper>;
 }
 
-function Gauges() {
-    let mock_data:number[] = []
-    for (let i = 0; i < 12; i++) {
-        mock_data.push(getRandomInt(0, 9));
-    }
-    let i = 0;
+function Gauges({stress, labels}: {stress: number[], labels: string[]}) {
+    
+
     return (
         <div>
-            {monthGauges({mock_data, start_index: 0})}
-            {monthGauges({mock_data, start_index: 4})}
-            {monthGauges({mock_data, start_index: 8})}
+            {monthGauges({stress, start_index: 0})}
+            {monthGauges({stress, start_index: 4})}
+            {monthGauges({stress, start_index: 8})}
         </div>
     );
 };
