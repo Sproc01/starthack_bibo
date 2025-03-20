@@ -6,7 +6,7 @@ from fastapi import HTTPException
 from enum import Enum
 
 import config as c
-from timed_cache import TimedCache, cached, CacheCategory
+from util.timed_cache import TimedCache, cached, CacheCategory
 
 
 class MeasureLabel(Enum):
@@ -65,6 +65,9 @@ async def retrieve_all_forecast_data(latitude: float, longitude: float, start_da
                     forecast_by_date[date] = {"date": date}
 
                 forecast_by_date[date][measure_label] = float(item["dailyValue"])
+
+                if measure_label == "soil_moisture_avg":
+                    forecast_by_date[date][measure_label] /= 100  # The retrieved data is in %
 
     # Convert the dictionary to a DataFrame
     df = pd.DataFrame(list(forecast_by_date.values()))

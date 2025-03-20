@@ -6,12 +6,14 @@ from enum import Enum
 from typing import Any, Callable, Optional, TypeVar
 from functools import wraps
 
-from util import SingletonMeta
+from util.util import SingletonMeta
 
 
 class CacheCategory(Enum):
     WEATHER_FORECAST = "weather_forecast"
-    STRESS_PREDICTION = "stress_prediction"
+    TEMP_STRESS_PREDICTION = "temp_stress_prediction"
+    DROUGHT_STRESS_PREDICTION = "drought_stress_prediction"
+    DB_DATA = "database_data"
 
 
 class TimedCache(metaclass=SingletonMeta):
