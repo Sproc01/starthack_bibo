@@ -21,6 +21,7 @@ class NN_risk(nn.Module):
         x = self.fc2(x)
         x = self.ac2(x)
         x = self.fc3(x)
+        x = torch.clamp(x, 0, 9)
         return x
     
     def save(self, path):
@@ -31,22 +32,3 @@ class NN_risk(nn.Module):
         torch.load_state_dict(torch.load(path))
 
 
-neural_network = NN_risk(1488, 3*12)
-epochs = 10
-learning_rate = 0.001
-optimizer = torch.optim.Adam(neural_network.parameters(), lr=learning_rate)
-criterion = nn.MSELoss()
-
-for i in range(epochs):
-    dataset = np.load('dataset.npy')
-    X = dataset[:, :-3*12]
-    y = dataset[:, -3*12:]
-    optimizer.zero_grad()
-    X = torch.tensor(X, dtype=torch.float32)
-    y = torch.tensor(y, dtype=torch.float32)
-    y_predicted = neural_network(X)
-    loss = criterion(y_predicted, y)
-    if i % 100 == 0:
-        print(f"Epochs:{i}, loss: {loss}")
-    loss.backward()
-    optimizer.step()
