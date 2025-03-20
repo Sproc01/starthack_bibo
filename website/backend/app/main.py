@@ -4,13 +4,16 @@ from fastapi import FastAPI, HTTPException, status, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from util import GlobalResources
+from util.util import GlobalResources
 import config as c
 from retrieve_forecast import retrieve_all_forecast_data
-from predict_stress import predict_temperature_stress
+from neural_networks.predict_stress import predict_temperature_stress, predict_drought_stress
 
-# TODO
-app = FastAPI(title="Syngenta", description="Syngenta", version="1.0.0")
+app = FastAPI(
+    title="Syngenta Product Suggestion",
+    description="Suggest Syngenta Products Depending on Predicted Weather Conditions",
+    version="1.0.0",
+)
 
 # TODO
 # CORS configuration
@@ -75,6 +78,7 @@ async def get_forecast():
         )
 
 
+# TODO
 @app.get("/api/predict/temp_stress", tags=["Temperature Stress"])
 async def get_temperature_stress_prediction():
     try:
@@ -83,7 +87,24 @@ async def get_temperature_stress_prediction():
         lon = c.SORRISO_LONGITUDE
 
         weather_forecast_df = await retrieve_all_forecast_data(lat, lon, today)
-        predict_temperature_stress(weather_forecast_df)
+        return predict_temperature_stress("soybean", weather_forecast_df)
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Failed to retrieve forecast data: {str(e)}"
+        )
+
+
+# TODO
+@app.get("/api/predict/drought_stress", tags=["Drought Stress"])
+async def get_drought_stress_prediction():
+    try:
+        today = datetime.today().strftime("%Y-%m-%d")
+        lat = c.SORRISO_LATITUDE
+        lon = c.SORRISO_LONGITUDE
+
+        weather_forecast_df = await retrieve_all_forecast_data(lat, lon, today)
+        predict_drought_stress(weather_forecast_df)
 
     except Exception as e:
         raise HTTPException(

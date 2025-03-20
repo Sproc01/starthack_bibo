@@ -6,7 +6,6 @@ import torch.nn.functional as F
 
 class NN_risk(nn.Module):
     def __init__(self, input_size, output_size, device):
-        '''Creates the model'''
         super(NN_risk, self).__init__()
         self.fc1 = nn.Linear(input_size, 512)
         self.ac1 = nn.ReLU()
@@ -17,7 +16,6 @@ class NN_risk(nn.Module):
         self.device = device
 
     def forward(self, state):
-        '''Do the prediction given the input'''
         state.to(self.device)
         x = self.fc1(state)
         x = self.ac1(x)
@@ -28,7 +26,6 @@ class NN_risk(nn.Module):
         return x
 
     def save(self, path):
-        '''Save the model'''
         torch.save(self.state_dict(), path)
 
     def load(self, path):
