@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTheme } from '@mui/material/styles';
 import { Gauge, gaugeClasses  } from '@mui/x-charts/Gauge';
-import { Alert, Grid2} from '@mui/material';
+import { Alert, Grid2, Paper} from '@mui/material';
 
 function getRandomInt(min: number,max: number) {
     min = Math.ceil(min);
@@ -35,14 +35,14 @@ function GaugeComponent({ risk, week_index }: { risk: number, week_index: number
         color = theme.palette.warning.main;
         AlertBlock = <div className='alertBox'>
             <Alert variant="filled" severity="warning" sx={{ padding: '0px 16px' }}>
-                Placeholder warning
+                Stress warning!
             </Alert>
         </div>
     } else if (risk > 6) {
         color = theme.palette.error.main;
         AlertBlock = <div className='alertBox'>
             <Alert variant="filled" severity="error" sx={{ padding: '0px 16px' }}>
-                Placeholder alert
+                Stress alert!
             </Alert>
         </div>
     }
@@ -50,8 +50,6 @@ function GaugeComponent({ risk, week_index }: { risk: number, week_index: number
     const curr = new Date(); // get current date
     const week_day = addDays(curr, week_index*7);
     const last_week_day = addDays(week_day, 6);
-
-
          
     return <div className='gauge'>
         {AlertBlock}
@@ -72,6 +70,21 @@ function GaugeComponent({ risk, week_index }: { risk: number, week_index: number
     </div>
 }
 
+function monthGauges({mock_data, start_index }: {mock_data: number[], start_index: number}) {
+    let list_of_gauges = []
+    for(let i = start_index; i < start_index + 4; i++) {
+        let risk = mock_data[i];
+        list_of_gauges.push(<Grid2 size={{ xs: 12, sm: 3 }} padding={2} minHeight={'200px'} height={'28vh'}>
+            <GaugeComponent risk = {risk} week_index = {i}/>
+        </Grid2>)
+    }
+    return <Paper elevation={2} sx={{margin: '1vh'}}>
+        <Grid2 container spacing={0}>
+            {list_of_gauges}
+        </Grid2>
+    </Paper>;
+}
+
 function Gauges() {
     let mock_data:number[] = []
     for (let i = 0; i < 12; i++) {
@@ -80,13 +93,9 @@ function Gauges() {
     let i = 0;
     return (
         <div>
-            <Grid2 container spacing={0} height={'70vh'}>
-                {mock_data.map(risk =>
-                    <Grid2 size={{ xs: 6, sm: 3 }} padding={2}>
-                        <GaugeComponent risk = {risk} week_index = {i++}/>
-                    </Grid2>
-                )}
-            </Grid2>
+            {monthGauges({mock_data, start_index: 0})}
+            {monthGauges({mock_data, start_index: 4})}
+            {monthGauges({mock_data, start_index: 8})}
         </div>
     );
 };
