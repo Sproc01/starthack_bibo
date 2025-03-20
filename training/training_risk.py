@@ -13,7 +13,9 @@ learning_rate = 0.1
 optimizer = torch.optim.SGD(neural_network.parameters(), lr=learning_rate)
 criterion = nn.MSELoss()
 
-res = list(mda.get_meteobluedata_with_risk_numpy('./stress_buster_data.db', 'SoyBean'))
+crop = "Wheat"
+
+res = list(mda.get_meteobluedata_with_risk_numpy('./stress_buster_data.db', crop))
 historical = []
 forecast = []
 prediction = []
@@ -84,4 +86,4 @@ for j in range(0, len(test_historical)):
     loss += criterion(y_predicted, y)
 print("Average loss: ", loss/len(test_historical))
 
-neural_network.save('risk_model.pth')
+neural_network.save(f'risk_model_{crop}.pth')
