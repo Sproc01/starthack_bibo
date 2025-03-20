@@ -13,7 +13,7 @@ def get_temperature_data_historical_forecast(json_file_path: str | Path) -> Iter
     3. For each chunk, yield:
        - the 2-year historical data
        - the next 8 days (including today)
-       - the next 12 weeks from today (84 days)
+       - the next 12 weeks from today (85 days including today)
 
     Args:
         json_file_path: Path to the JSON file with temperature data
@@ -21,7 +21,7 @@ def get_temperature_data_historical_forecast(json_file_path: str | Path) -> Iter
     Yields:
         Tuple of (2-year chunk of daily temperatures, 
                  next 8 days' temperatures including today,
-                 next 12 weeks' temperatures from today)
+                 next 12 weeks' temperatures from today (including today))
     """
     # Load the JSON data
     with open(json_file_path, 'r') as file:
@@ -33,7 +33,7 @@ def get_temperature_data_historical_forecast(json_file_path: str | Path) -> Iter
     # Define constants
     DAYS_IN_TWO_YEARS = 730
     DAYS_IN_PREDICTION = 8  # Including today + 7 more days
-    DAYS_IN_12_WEEKS = 84   # 12 weeks * 7 days
+    DAYS_IN_12_WEEKS = 85   # 12 weeks * 7 days + today (85 instead of 84)
 
     # Yield 2-year chunks with the next 8 days and next 12 weeks
     for i in range(len(temperatures) - DAYS_IN_TWO_YEARS - DAYS_IN_12_WEEKS + 1):
