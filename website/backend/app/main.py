@@ -4,9 +4,10 @@ from fastapi import FastAPI, HTTPException, status, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-
+from util import GlobalResources
 import config as c
 from retrieve_forecast import retrieve_all_forecast_data
+from predict_stress import predict_temperature_stress
 
 # TODO
 app = FastAPI(title="Syngenta", description="Syngenta", version="1.0.0")
@@ -44,6 +45,12 @@ async def general_exception_handler(request: Request, exc: Exception):
     )
 
 
+# Load resources
+@app.on_event("startup")
+async def startup_event():
+    GlobalResources()  # Load resources
+
+
 # API routes
 @app.get("/api/forecast", tags=["Forecast"])
 async def get_forecast():
@@ -62,6 +69,22 @@ async def get_forecast():
             "coordinates": {"latitude": lat, "longitude": lon},
             "forecast": forecast_data,
         }
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Failed to retrieve forecast data: {str(e)}"
+        )
+
+
+@app.get("/api/predict/temp_stress", tags=["Temperature Stress"])
+async def get_temperature_stress_prediction():
+    try:
+        today = datetime.today().strftime("%Y-%m-%d")
+        lat = c.SORRISO_LATITUDE
+        lon = c.SORRISO_LONGITUDE
+
+        weather_forecast_df = await retrieve_all_forecast_data(lat, lon, today)
+        predict_temperature_stress(weather_forecast_df)
+
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Failed to retrieve forecast data: {str(e)}"

@@ -10,9 +10,9 @@ from timed_cache import TimedCache, cached, CacheCategory
 
 
 class MeasureLabel(Enum):
-    T_MAX = "TempSurface_DailyMax (C)"
-    T_MIN = "TempSurface_DailyMin (C)"
-    T_AVG = "TempAir_DailyAvg (C)"
+    TEMP_MAX = "TempSurface_DailyMax (C)"
+    TEMP_MIN = "TempSurface_DailyMin (C)"
+    TEMP_AVG = "TempAir_DailyAvg (C)"
     RAINFALL_SUM = "Precip_DailySum (mm)"
     EVAPORATION_SUM = "Referenceevapotranspiration_DailySum (mm)"
     SOIL_MOISTURE_AVG = "Soilmoisture_0to10cm_DailyAvg (vol%)"
@@ -59,7 +59,7 @@ async def retrieve_all_forecast_data(latitude: float, longitude: float, start_da
 
         if result:
             for item in result:
-                date = datetime.strptime(item["date"], "%Y/%m/%d %H:%M:%S").isoformat()
+                date = datetime.strptime(item["date"], "%Y/%m/%d %H:%M:%S")
 
                 if date not in forecast_by_date:
                     forecast_by_date[date] = {"date": date}
