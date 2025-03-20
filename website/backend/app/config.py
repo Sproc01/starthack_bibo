@@ -18,3 +18,8 @@ SORRISO_LONGITUDE = -55.7319178
 HOST = "0.0.0.0"
 PORT = 8123
 DEBUG_MODE = True
+
+# Resources
+HISTORICAL_WHEATER_DB_PATH = "./resources/stress_buster_historical_data.db"
+TEMP_STRESS_MODEL_PATH = "./resources"
+DROUGHT_STRESS_MODEL_PATH = "./resources"
