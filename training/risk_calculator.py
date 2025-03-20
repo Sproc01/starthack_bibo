@@ -78,9 +78,13 @@ def calculate_frost_risk(days_min, crop_type):
     return avg_risk_frost / len(days_min)
 
 def riskCalculator(days_max, days_min, crop_type):
-    heat_risk = calculate_diurnal_heat_stress_risk(days_max, crop_type)
-    frost_risk = calculate_frost_risk(days_min, crop_type)
-    night_risk = calculate_notturnal_heat_stress_risk(days_min, crop_type)
+    heat_risk = []
+    frost_risk = []
+    night_risk = []
+    for i in range(0, len(days_max)-7, 7):
+        heat_risk.append(calculate_diurnal_heat_stress_risk(days_max[i:i+7], crop_type))
+        frost_risk.append(calculate_frost_risk(days_min[i:i+7], crop_type))
+        night_risk.append(calculate_notturnal_heat_stress_risk(days_min[i:i+7], crop_type))
     return heat_risk, frost_risk, night_risk
 
 def droughtRiskCalculator(cumulative_precipitation, cumulative_evapotranspiration, soil_moistrue, avg_temp):

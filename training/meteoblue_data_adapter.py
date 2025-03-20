@@ -185,11 +185,6 @@ def get_meteobluedata_with_risk_numpy(
         # Calculate risk values
         heat_risk, frost_risk, night_risk = riskCalculator(next_12_weeks_tmax, next_12_weeks_tmin, crop_type)
 
-        # Create the 3D array structure
-        # Dimension 1: [historical_data, forecast_data, risk_values]
-        # Dimension 2: Time points
-        # Dimension 3: [temp_min, temp_max] for historical and forecast data
-
         # Stack min and max temperatures for historical data
         historical_data = np.column_stack((two_year_tmin, two_year_tmax))  # Shape: (730, 2)
 
@@ -199,15 +194,7 @@ def get_meteobluedata_with_risk_numpy(
         # Create risk values array (no third dimension)
         risk_data = np.array([heat_risk, frost_risk, night_risk])  # Shape: (3,)
 
-        # Create the final array with proper structure
-        # Note: risk_data doesn't have a third dimension, so we handle it separately
-        result = [
-            historical_data,  # Shape: (730, 2)
-            forecast_data,    # Shape: (8, 2)
-            risk_data         # Shape: (3,)
-        ]
-
-        yield np.array(result, dtype=object)  # Using dtype=object to handle different shapes
+        yield historical_data, forecast_data, risk_data
 
 if __name__ == "__main__":
     db_path = "stress_buster_data.db"
