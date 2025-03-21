@@ -2,17 +2,12 @@ import React, { useState } from 'react';
 
 import { 
   Box, 
-  Stack, 
-  Snackbar,
-  Card,
-  useTheme,
+  Stack,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
-  Paper,
   IconButton,
-  CardMedia,
   Button,
   TextField,
 } from '@mui/material';
@@ -26,7 +21,6 @@ import DarkModeIcon from '@mui/icons-material/DarkMode';
 import AcUnitIcon from '@mui/icons-material/AcUnit';
 import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment';
 import ErrorIcon from '@mui/icons-material/Error';
-import NotificationCard from './NotificationCard';
 import CloseIcon from '@mui/icons-material/Close';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import {Accordion, AccordionSummary, Typography, AccordionDetails} from '@mui/material';
@@ -35,6 +29,38 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import stressBuster1 from '../assets/product_cards/stress_buster_1.png';
 import stressBuster2 from '../assets/product_cards/stress_buster_2.jpeg';
 import MapComp from './Map';
+
+// import InputBase from '@mui/material/InputBase';
+// import Divider from '@mui/material/Divider';
+// import MenuIcon from '@mui/icons-material/Menu';
+// import SearchIcon from '@mui/icons-material/Search';
+// import DirectionsIcon from '@mui/icons-material/Directions';
+
+// function CustomizedInputBase({location}: {location: string}) {
+//   return (
+//     <Paper
+//       component="form"
+//       sx={{ p: '2px 4px', display: 'flex', alignItems: 'center', width:'100%'}}
+//     >
+//       <IconButton sx={{ p: '10px' }} aria-label="menu">
+//         <MenuIcon />
+//       </IconButton>
+//       <InputBase
+//         sx={{ ml: 1, flex: 1 }}
+//         placeholder="Search Google Maps"
+//         value={location}
+//         inputProps={{ 'aria-label': 'search google maps' }}
+//       />
+//       <IconButton type="button" sx={{ p: '10px' }} aria-label="search">
+//         <SearchIcon />
+//       </IconButton>
+//       <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
+//       <IconButton color="primary" sx={{ p: '10px' }} aria-label="directions">
+//         <DirectionsIcon />
+//       </IconButton>
+//     </Paper>
+//   );
+// }
 
 
 function addDays(date:Date, days:number) {
@@ -159,18 +185,20 @@ function Alerts({stress, labels}: {stress: number[], labels: string[][]}) {
                 <MapComp latitude={latitude} longitude={longitude} zoom={13} height={'260px'} width={'260px'} />
                 <TextField id="filled-basic" label="Location" color='success' variant="standard" sx={{padding:'6px', width:'100%'}} value={location}/>
             </div>
+            <div style={{overflowY: 'auto', height: 'calc(90vh - 352px)'}}>
             {
                 [2, 1].map((id) => {
                     return <StressAccordion id={id} labels={labels} stress={stress}/>
                 })
             }
+            </div>
         </div>
     );
 }
 
 // <div className='coordinates'>
-                //     <TextField id="filled-basic" label="Latitude" color='success' variant="standard" sx={{padding:'6px', width:'100%'}} value={latitude}/>
-                //     <TextField id="filled-basic" label="Longitude" color='success' variant="standard" sx={{padding:'6px', width:'100%'}} value={longitude}/>
-                // </div>
+//     <TextField id="filled-basic" label="Latitude" color='success' variant="standard" sx={{padding:'6px', width:'100%'}} value={latitude}/>
+//     <TextField id="filled-basic" label="Longitude" color='success' variant="standard" sx={{padding:'6px', width:'100%'}} value={longitude}/>
+// </div>
 
 export default Alerts;

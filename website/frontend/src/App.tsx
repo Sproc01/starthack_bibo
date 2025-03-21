@@ -131,7 +131,7 @@ function App() {
       <Grid2 size={{ xs: 12, sm: 8 }} height={'90vh'} minHeight={'500px'}>
         <Gauges stress={stress} />
       </Grid2>
-      <Grid2 size={{ xs: 12, sm: 4 }} height={'90vh'} minHeight={'500px'} overflow={'scroll'}>
+      <Grid2 size={{ xs: 12, sm: 4 }} height={'90vh'} minHeight={'500px'}>
         <Alerts stress={stress} labels={labels} />
       </Grid2>
     </Grid2>
