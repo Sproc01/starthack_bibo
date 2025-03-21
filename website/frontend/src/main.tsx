@@ -20,6 +20,9 @@ const theme = createTheme({
       light: '#ff99ff',
       dark: '#770087',
     },
+    success: {
+      main: '#80ca3f',
+    },
     error: {
       main: '#ba2b00',
     },

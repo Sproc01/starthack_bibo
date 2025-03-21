@@ -33,7 +33,6 @@ const MapComp: React.FC<MapCompProps> = ({
     map.scrollWheelZoom.disable();
     map.boxZoom.disable();
     map.keyboard.disable();
-    if (map.tap) map.tap.disable();
   }, [mapRef.current]);
 
   // Handle coordinate changes with animation

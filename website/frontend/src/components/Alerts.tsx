@@ -1,110 +1,176 @@
 import React, { useState } from 'react';
+
 import { 
   Box, 
   Stack, 
   Snackbar,
-  Card
+  Card,
+  useTheme,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Paper,
+  IconButton,
+  CardMedia,
+  Button,
+  TextField,
 } from '@mui/material';
+import List from '@mui/material/List';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import ReportProblemIcon from '@mui/icons-material/ReportProblem';
+import FlareIcon from '@mui/icons-material/Flare';
+import DarkModeIcon from '@mui/icons-material/DarkMode';
+import AcUnitIcon from '@mui/icons-material/AcUnit';
+import LocalFireDepartmentIcon from '@mui/icons-material/LocalFireDepartment';
+import ErrorIcon from '@mui/icons-material/Error';
 import NotificationCard from './NotificationCard';
+import CloseIcon from '@mui/icons-material/Close';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import {Accordion, AccordionSummary, Typography, AccordionDetails} from '@mui/material';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
-function Alerts() {
-    // State for controlling the visibility of the snackbar alert
-    const [openSnackbar, setOpenSnackbar] = useState(false);
+import stressBuster1 from '../assets/product_cards/stress_buster_1.png';
+import stressBuster2 from '../assets/product_cards/stress_buster_2.jpeg';
+import MapComp from './Map';
 
-    const handleCloseSnackbar = (event?: React.SyntheticEvent | Event, reason?: string) => {
-        if (reason === 'clickaway') {
-            return;
-        }
-        setOpenSnackbar(false);
-    };
 
-    // Sample dialog images for different cards
-    const successImages = [
-        'https://placehold.co/600x400/4CAF50/FFFFFF.png?text=Success+Image+1',
-        'https://placehold.co/600x400/4CAF50/FFFFFF.png?text=Success+Image+2',
-        'https://placehold.co/600x400/4CAF50/FFFFFF.png?text=Success+Image+3'
-    ];
-    
-    const errorImages = [
-        'https://placehold.co/600x400/F44336/FFFFFF.png?text=Error+Image+1',
-        'https://placehold.co/600x400/F44336/FFFFFF.png?text=Error+Image+2'
-    ];
-    
-    const warningImages = [
-        'https://placehold.co/600x400/FF9800/FFFFFF.png?text=Warning+Image+1',
-        'https://placehold.co/600x400/FF9800/FFFFFF.png?text=Warning+Image+2',
-        'https://placehold.co/600x400/FF9800/FFFFFF.png?text=Warning+Image+3',
-        'https://placehold.co/600x400/FF9800/FFFFFF.png?text=Warning+Image+4'
-    ];
+function addDays(date:Date, days:number) {
+    var result = new Date(date);
+    result.setDate(result.getDate() + days);
+    return result;
+}
+
+function StressAccordion({id, labels, stress}: { id: number, labels: string[][], stress: number[] }) {
+    const [openDialog, setOpenDialog] = useState(false);
+
+    function toggleDialog() {
+        setOpenDialog(!openDialog);
+    }
+
+    let labelsCONST = ["Diurnal Heat", "Frost", "Nightime Heat", "Drought"]
+    const icons = [<LocalFireDepartmentIcon />, <AcUnitIcon />, <DarkModeIcon />, <FlareIcon />]
+    let title = "Stress Alerts";
+    let icon = <ErrorIcon color="error" />;
+    let threshold = [6, 10];
+    if(id === 0) {
+        title = "Normal Conditions";
+        icon = <CheckCircleIcon color="success" />
+    }
+    else if(id === 1) {
+        title = "Stress Warnings";
+        icon = <ReportProblemIcon  color="warning"/>
+        threshold=[3, 6];
+    }
+
+    let labels_dict: { [key: string]: string[] } = {
+        "Diurnal Heat": [],
+        "Frost": [],
+        "Nightime Heat": [],
+        "Drought": []
+    }
+
+    const curr = new Date(); // get current date
+
+    let stress_items = labelsCONST.filter((label, index) => {
+        let flag = false;
+        labels.forEach((lab, week) => {
+            if(lab.includes(label) && stress[week] >= threshold[0] && stress[week] < threshold[1]) {
+                flag = true;
+                const week_day = addDays(curr, week*7);
+                const last_week_day = addDays(week_day, 6);
+                labels_dict[label].push(`${week_day.getDate()}/${week_day.getMonth()} - ${last_week_day.getDate()}/${last_week_day.getMonth()}`);
+            }
+        });
+        return flag;
+    }).map((label, index) => {
+        return <ListItemButton onClick={toggleDialog} key={index}>
+            <ListItemIcon>
+                {icons[index]}
+            </ListItemIcon>
+            <ListItemText primary={label + ": "} secondary={labels_dict[label].join(', ')} />
+            <Dialog open={openDialog}
+                onClose={toggleDialog}
+                maxWidth="md"
+                fullWidth>
+                <DialogTitle>
+                {"STRESS BUSTER"}
+                <IconButton
+                    aria-label="close"
+                    onClick={toggleDialog}
+                    sx={{
+                    position: 'absolute',
+                    right: 8,
+                    top: 8,
+                    }}
+                >
+                    <CloseIcon />
+                </IconButton>
+                </DialogTitle>
+                <DialogContent dividers>
+                <Box sx={{ mt: 2 }}>
+                    <Stack spacing={2}>
+                        <img src={stressBuster1} />
+                        <img src={stressBuster2} />
+                    </Stack>
+                </Box>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={toggleDialog}>Close</Button>
+                </DialogActions>
+            </Dialog>
+        </ListItemButton>
+    }
+    );
+
+    return (<Accordion  defaultExpanded = {stress_items.length !== 0} elevation={2}>
+        <AccordionSummary
+        expandIcon={<ExpandMoreIcon />}
+        aria-controls="panel1-content"
+        id="panel1-header"
+        >
+        {icon}
+        <Typography component="span" sx={{margin:"0px 0px 0px 10px"}}>{title}</Typography>
+        </AccordionSummary>
+        <AccordionDetails sx={{padding: 0}}>
+        <Typography>
+        <List
+            sx={{ width: '100%', bgcolor: 'background.paper' }}
+            component="nav"
+        >
+            {stress_items}
+        </List>
+        </Typography>
+        </AccordionDetails>
+    </Accordion>
+    )
+}
+
+function Alerts({stress, labels}: {stress: number[], labels: string[][]}) {
+    const [latitude, setLatitude] = useState(-12.524055376770672);
+    const [longitude, setLongitude] = useState(-55.69886311374719);
+    const [location, setLocation] = useState('Sorriso, State of Mato Grosso, 78890-000, Brazil');
 
     return (
-        <Box sx={{ width: '100%', p: 2 }}>
-            <Stack spacing={2}>
-                <NotificationCard 
-                    severity="success"
-                    title="Success"
-                    message="This is a success notification — click to see more details!"
-                    imageUrl="https://placehold.co/100x150/4CAF50/FFFFFF.png?text=Success"
-                    dialogImages={successImages}
-                    dialogTitle="Success Details"
-                />
-                
-                <NotificationCard 
-                    severity="error"
-                    title="Error"
-                    message="This is an error notification — click to see more details!"
-                    imageUrl="https://placehold.co/100x150/F44336/FFFFFF.png?text=Error"
-                    dialogImages={errorImages}
-                    dialogTitle="Error Details"
-                />
-                
-                <NotificationCard 
-                    severity="warning"
-                    title="Warning"
-                    message="This is a warning notification — click to see more details!"
-                    imageUrl="https://placehold.co/100x150/FF9800/FFFFFF.png?text=Warning"
-                    dialogImages={warningImages}
-                    dialogTitle="Warning Details"
-                />
-                
-                <NotificationCard 
-                    severity="info"
-                    title="Info"
-                    message="This is an info notification — check it out!"
-                    imageUrl="https://placehold.co/100x150/2196F3/FFFFFF.png?text=Info"
-                />
-                
-                <NotificationCard 
-                    severity="success"
-                    variant="outlined"
-                    message="This is an outlined success notification with a close button."
-                    imageUrl="https://placehold.co/100x150/4CAF50/FFFFFF.png?text=Outlined"
-                    onClose={() => console.log('Notification closed')}
-                />
-                
-                <NotificationCard 
-                    severity="info"
-                    variant="filled"
-                    message="Click me to show a temporary notification!"
-                    imageUrl="https://placehold.co/100x150/2196F3/FFFFFF.png?text=Click"
-                    onClick={() => setOpenSnackbar(true)}
-                />
-            </Stack>
-            
-            <Snackbar
-                open={openSnackbar}
-                autoHideDuration={6000}
-                onClose={handleCloseSnackbar}
-            >
-                <NotificationCard 
-                    severity="success"
-                    message="This is a temporary notification!"
-                    imageUrl="https://placehold.co/60x80/4CAF50/FFFFFF.png?text=Notify"
-                    onClose={handleCloseSnackbar}
-                />
-            </Snackbar>
-        </Box>
+        <div>
+            <div className='geo-map'>
+                <MapComp latitude={latitude} longitude={longitude} zoom={13} height={'260px'} width={'260px'} />
+                <TextField id="filled-basic" label="Location" color='success' variant="standard" sx={{padding:'6px', width:'100%'}} value={location}/>
+            </div>
+            {
+                [2, 1].map((id) => {
+                    return <StressAccordion id={id} labels={labels} stress={stress}/>
+                })
+            }
+        </div>
     );
 }
+
+// <div className='coordinates'>
+                //     <TextField id="filled-basic" label="Latitude" color='success' variant="standard" sx={{padding:'6px', width:'100%'}} value={latitude}/>
+                //     <TextField id="filled-basic" label="Longitude" color='success' variant="standard" sx={{padding:'6px', width:'100%'}} value={longitude}/>
+                // </div>
 
 export default Alerts;

@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTheme } from '@mui/material/styles';
 import { Gauge, gaugeClasses  } from '@mui/x-charts/Gauge';
-import { Alert, Grid2, Paper} from '@mui/material';
+import { Alert, Grid, Grid2, Paper} from '@mui/material';
 
 function convertRiskToGauges(risk: number) {
     let gauge = risk/9 * 100;
@@ -25,14 +25,14 @@ function GaugeComponent({ risk, week_index }: { risk: number, week_index: number
 
     let AlertBlock = <div className='alertBox'></div>;
     let color = theme.palette.success.main;
-    if (risk > 3 && risk <= 6) {
+    if (risk >= 3 && risk < 6) {
         color = theme.palette.warning.main;
         AlertBlock = <div className='alertBox'>
             <Alert variant="filled" severity="warning" sx={{ padding: '0px 16px' }}>
                 Stress warning!
             </Alert>
         </div>
-    } else if (risk > 6) {
+    } else if (risk >= 6) {
         color = theme.palette.error.main;
         AlertBlock = <div className='alertBox'>
             <Alert variant="filled" severity="error" sx={{ padding: '0px 16px' }}>
@@ -68,7 +68,7 @@ function monthGauges({stress, start_index }: {stress: number[], start_index: num
     let list_of_gauges = []
     for(let i = start_index; i < start_index + 4; i++) {
         let risk = stress[i];
-        list_of_gauges.push(<Grid2 size={{ xs: 12, sm: 3 }} padding={2} minHeight={'200px'} height={'28vh'}>
+        list_of_gauges.push(<Grid2 size={{ xs: 12, sm: 3 }} padding={2} minHeight={'200px'} height={'28vh'} key={i}>
             <GaugeComponent risk = {risk} week_index = {i}/>
         </Grid2>)
     }
@@ -79,7 +79,7 @@ function monthGauges({stress, start_index }: {stress: number[], start_index: num
     </Paper>;
 }
 
-function Gauges({stress, labels}: {stress: number[], labels: string[]}) {
+function Gauges({stress}: {stress: number[]}) {
     
 
     return (
