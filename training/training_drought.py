@@ -5,7 +5,7 @@ import torch.nn as nn
 from meteoblue_data_adapter import get_last30_days_sum
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-neural_network = NN_drought(8, 12, device) # 4 cumulative 30 days before and 4 prediction for the next week, 12 output values, one each week
+neural_network = NN_drought(8, 12, device)
 epochs = 1000
 learning_rate = 0.1
 optimizer = torch.optim.SGD(neural_network.parameters(), lr=learning_rate)

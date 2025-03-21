@@ -212,7 +212,6 @@ def get_last30_days_sum(db_path: str | Path) -> tuple[List[float], List[float], 
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
 
-    # Seleziona gli ultimi 30 record ordinati in base al rowid (si assume che rowid più alto corrisponda a date recenti)
     query = """
     SELECT evaporation_sum, rainfall_sum, soil_moisture_avg, temp_avg
     FROM bibo_data
