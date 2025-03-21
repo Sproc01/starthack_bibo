@@ -5,13 +5,13 @@ import torch.nn as nn
 from meteoblue_data_adapter import get_last30_days_sum
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-neural_network = NN_drought(8, 12, device) # 4 cumulative 30 days before and 4 prediction for the next week, 12 output values, one each week
+neural_network = NN_drought(8, 12, device).to(device)
 epochs = 1000
 learning_rate = 0.1
 optimizer = torch.optim.SGD(neural_network.parameters(), lr=learning_rate)
 criterion = nn.MSELoss()
 
-data = get_last30_days_sum('./stress_buster_data.db')
+data = get_last30_days_sum('./dataset/stress_buster_data.db')
 
 sum_evaporation_past = []
 sum_rainfall_past = []
@@ -57,14 +57,14 @@ for epoch in range(epochs):
     s_past = sum_soil_moisture_past_shuffled[j:j+batch_size]
     t_past = temp_past_shuffled[j:j+batch_size]
     e_present = sum_evaporation_present_shuffled[j:j+batch_size]
-    r_present = sum_evaporation_present_shuffled[j:j+batch_size]
+    r_present = sum_rainfall_present_shuffled[j:j+batch_size]
     s_present = sum_soil_moisture_present_shuffled[j:j+batch_size]
     t_present = sum_temp_present_shuffled[j:j+batch_size]
 
     y = output_shuffled[j:j+batch_size]
 
-    x = torch.tensor(np.array([e_past, r_past, s_past, t_past, e_present, r_present, s_present, t_present]), dtype=torch.float32)
-    y = torch.tensor(np.array(y), dtype=torch.float32)
+    x = torch.tensor(np.array([e_past, r_past, s_past, t_past, e_present, r_present, s_present, t_present]), dtype=torch.float32).to(device)
+    y = torch.tensor(np.array(y), dtype=torch.float32).to(device)
     x = x.reshape((batch_size, -1))
     y = y.reshape((batch_size, 12))
 

@@ -15,7 +15,7 @@ criterion = nn.MSELoss()
 
 crop = "Wheat"
 
-res = list(mda.get_meteobluedata_with_risk_numpy('./stress_buster_data.db', crop))
+res = list(mda.get_meteobluedata_with_risk_numpy('./dataset/stress_buster_data.db', crop))
 historical = []
 forecast = []
 prediction = []

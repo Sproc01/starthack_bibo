@@ -79,28 +79,27 @@ async def get_temperature_stress_prediction(crop: str):
         lon = c.SORRISO_LONGITUDE
 
         weather_forecast_df = await retrieve_all_forecast_data(lat, lon, today)
-        return predict_temperature_stress(crop, weather_forecast_df)
+        return predict_temperature_stress(crop.lower(), weather_forecast_df)
 
     except Exception as e:
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Failed to retrieve forecast data: {str(e)}"
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Failed to predict temperature stress: {str(e)}"
         )
 
 
-# TODO
-@app.get("/api/predict/drought_stress", tags=["Drought Stress"])
-async def get_drought_stress_prediction():
+@app.get("/api/predict/drought_stress{path:path}", tags=["Drought Stress"])
+async def get_drought_stress_prediction(path: str = None):
     try:
         today = datetime.today().strftime("%Y-%m-%d")
         lat = c.SORRISO_LATITUDE
         lon = c.SORRISO_LONGITUDE
 
         weather_forecast_df = await retrieve_all_forecast_data(lat, lon, today)
-        predict_drought_stress(weather_forecast_df)
+        return predict_drought_stress(weather_forecast_df)
 
     except Exception as e:
         raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Failed to retrieve forecast data: {str(e)}"
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Failed to predict drought stress: {str(e)}"
         )
 
 

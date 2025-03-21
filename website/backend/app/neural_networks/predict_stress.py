@@ -1,6 +1,7 @@
 import torch
 import math
 import pandas as pd
+import numpy as np
 from datetime import datetime, timedelta
 
 import config as c
@@ -15,7 +16,7 @@ def get_historical_weather_last_days(num_days: int) -> pd.DataFrame:
 
     current_date = datetime.now()
     date_n_days_ago = current_date - timedelta(days=(num_days + 1))  # All dates start at midnight
-    print(date_n_days_ago)
+
     return historical_df.loc[historical_df["date"] >= date_n_days_ago]
 
 
@@ -62,31 +63,29 @@ def predict_temperature_stress(crop: str, forecast_df: pd.DataFrame) -> torch.Te
     return stress_data
 
 
-# TODO
 @cached(TimedCache(), category=CacheCategory.DROUGHT_STRESS_PREDICTION, ttl_seconds=12 * 3600)
 def predict_drought_stress(forecast_df: pd.DataFrame) -> torch.Tensor:
+    f_evaporation_sum = forecast_df["evaporation_sum"].sum()
+    f_rainfall_sum = forecast_df["rainfall_sum"].sum()
+    f_soil_moisture_avg = forecast_df["soil_moisture_avg"].mean()
+    f_temp_avg = forecast_df["temp_avg"].mean()
+
+    forecast_data_parameters = [f_evaporation_sum, f_rainfall_sum, f_soil_moisture_avg, f_temp_avg]
+
     # Get historical data
     historical_data = get_historical_weather_last_days(c.NUM_DAYS_DROUGHT_STRESS_PREDICTION)
 
-    # Sum evaporation and precipitation in the whole considered historical period
-    h_sum_columns = historical_data.filter(regex="_sum$").sum()
-    # Average soil moisture and temperature in the whole considered historical period
-    h_avg_columns = historical_data.filter(regex="_avg$").mean()
-    # Historical data
-    historical_data_parameters = pd.concat([h_sum_columns, h_avg_columns]).tolist()
+    h_evaporation_sum = historical_data["evaporation_sum"].sum()
+    h_rainfall_sum = historical_data["rainfall_sum"].sum()
+    h_soil_moisture_avg = historical_data["soil_moisture_avg"].mean()
+    h_temp_avg = historical_data["temp_avg"].mean()
 
-    # Sum evaporation and precipitation in the forecast period
-    f_sum_columns = forecast_df.filter(regex="_sum$").sum()
-    # Average soil moisture and temperature in the forecast period
-    f_avg_columns = forecast_df.filter(regex="_avg$").mean()
-    # Forecast data
-    forecast_data_parameters = pd.concat([f_sum_columns, f_avg_columns]).tolist()
+    historical_data_parameters = [h_evaporation_sum, h_rainfall_sum, h_soil_moisture_avg, h_temp_avg]
 
     resources = GlobalResources()
     drought_stress_model = resources.get_drought_stress_model()
 
-    # TODO
-    features = combined_data[feature_columns].to_numpy()
+    features = np.array([forecast_data_parameters + historical_data_parameters])
     features_tensor = torch.from_numpy(features).float()
 
     # Ensure tensor is on the same device as the model
@@ -97,4 +96,15 @@ def predict_drought_stress(forecast_df: pd.DataFrame) -> torch.Tensor:
     with torch.no_grad():
         stress_predictions = drought_stress_model(features_tensor)
 
-    return stress_predictions
+    # The output tensor contains 1 value for the drought index for each of the 12 following weeks
+    stress_data = {}
+    for week in range(1, 13):
+        week_index = week - 1
+
+        drought_stress = math.floor(stress_predictions[0][week_index] * 10)
+
+        stress_data[f"week_{week}"] = {
+            "drought_stress": drought_stress,
+        }
+
+    return stress_data
