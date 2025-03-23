@@ -44,9 +44,15 @@ The key components of our solution are:
 
 ### 🖼️ Screenshots
 
+![Mock crop dashboard](https://github.com/user-attachments/assets/08be4e4a-a20d-4fb8-b491-61dd32d37390)
+
+![Clickable alerts](https://github.com/user-attachments/assets/35f573c4-b02f-40c7-ad23-9de4480fba39)
+
+![Product page](https://github.com/user-attachments/assets/f7b61b70-d108-48b9-addd-9e6c8b831930)
+
 ## 👥 Team
 
-- @lorenzo-asquini
-- @albertopasqualetto
-- @Sproc01
-- @ZuechR
+- [Lorenzo Asquini](https://github.com/lorenzo-asquini)
+- [Alberto Pasqualetto](https://github.com/albertopasqualetto)
+- [Michele Sprocatti](https://github.com/Sproc01)
+- [Riccardo Zuech](https://github.com/ZuechR)
