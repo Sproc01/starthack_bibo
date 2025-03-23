@@ -1,0 +1,28 @@
+meta {
+  name: Forecast Daily
+  type: http
+  seq: 1
+}
+
+get {
+  url: https://services.cehub.syngenta-ais.com/api/Forecast/ShortRangeForecastDaily?format=json&supplier=Meteoblue&startDate=2025-03-20&endDate=2025-03-23&measureLabel=TempAir_DailyAvg%20(C);TempAir_DailyMax%20(C);TempAir_DailyMin%20(C);Precip_DailySum%20(mm);WindDirection_DailyAvg%20(Deg);WindSpeed_DailyAvg%20(m/s);HumidityRel_DailyAvg%20(pct);WindDirection_DailyAvg;Soilmoisture_0to10cm_DailyAvg%20(vol%25);WindGust_DailyMax%20(m/s);Referenceevapotranspiration_DailySum%20(mm);TempSurface_DailyAvg%20(C);Soiltemperature_0to10cm_DailyAvg%20(C)&latitude=47&longitude=7
+  body: none
+  auth: none
+}
+
+params:query {
+  format: json
+  supplier: Meteoblue
+  startDate: 2025-03-20
+  endDate: 2025-03-23
+  measureLabel: TempAir_DailyAvg%20(C);TempAir_DailyMax%20(C);TempAir_DailyMin%20(C);Precip_DailySum%20(mm);WindDirection_DailyAvg%20(Deg);WindSpeed_DailyAvg%20(m/s);HumidityRel_DailyAvg%20(pct);WindDirection_DailyAvg;Soilmoisture_0to10cm_DailyAvg%20(vol%25);WindGust_DailyMax%20(m/s);Referenceevapotranspiration_DailySum%20(mm);TempSurface_DailyAvg%20(C);Soiltemperature_0to10cm_DailyAvg%20(C)
+  latitude: 47
+  longitude: 7
+  ~wkt: POINT(7 47)
+  ~top: 
+}
+
+headers {
+  Accept: application/json, text/plain, */*
+  ApiKey: d4f087c7-7efc-41b4-9292-0f22b6199215
+}

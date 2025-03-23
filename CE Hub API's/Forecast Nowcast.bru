@@ -1,0 +1,26 @@
+meta {
+  name: Forecast Nowcast
+  type: http
+  seq: 3
+}
+
+get {
+  url: https://services.cehub.syngenta-ais.com/api/Forecast/Nowcast?latitude=47&longitude=7&startDate=2025-03-20&endDate=2025-03-21&supplier=Meteoblue&measureLabel=Temperature_15Min%20%28C%29%3BWindSpeed_15Min%20%28m%2Fs%29%3BWindDirection_15Min%3BHumidityRel_15Min%20%28pct%29&format=json
+  body: none
+  auth: none
+}
+
+params:query {
+  latitude: 47
+  longitude: 7
+  startDate: 2025-03-20
+  endDate: 2025-03-21
+  supplier: Meteoblue
+  measureLabel: Temperature_15Min%20%28C%29%3BWindSpeed_15Min%20%28m%2Fs%29%3BWindDirection_15Min%3BHumidityRel_15Min%20%28pct%29
+  format: json
+}
+
+headers {
+  accept: */*
+  ApiKey: d4f087c7-7efc-41b4-9292-0f22b6199215
+}

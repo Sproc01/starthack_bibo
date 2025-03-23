@@ -1,0 +1,98 @@
+meta {
+  name: Drought Historical Daily copy
+  type: http
+  seq: 9
+}
+
+post {
+  url: http://my.meteoblue.com/dataset/query?apikey=7b29a207a0de
+  body: json
+  auth: none
+}
+
+params:query {
+  apikey: 7b29a207a0de
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "units": {
+      "temperature": "C",
+      "velocity": "km/h",
+      "length": "metric",
+      "energy": "watts"
+    },
+    "geometry": {
+      "type": "MultiPoint",
+      "coordinates": [
+        [
+          -55.7319178,
+          -12.5471531
+        ]
+      ],
+      "locationNames": [
+        "Sorriso"
+      ],
+      "mode": "preferLandWithMatchingElevation"
+    },
+    "format": "json",
+    "timeIntervals": [
+      "1976-01-01T+01:00/2025-01-01T+01:00"
+    ],
+    "timeIntervalsAlignment": "none",
+    "queries": [
+      {
+        "domain": "ERA5T",
+        "gapFillDomain": "NEMSGLOBAL",
+        "timeResolution": "daily",
+        "codes": [
+          {
+            "code": 61,
+            "level": "sfc",
+            "aggregation": "sum"
+          }
+        ]
+      }
+      {
+        "domain": "ERA5T",
+        "gapFillDomain": "NEMSGLOBAL",
+        "timeResolution": "daily",
+        "codes": [
+          {
+            "code": 144,
+            "level": "0-7 cm down",
+            "aggregation": "mean"
+          }
+        ]
+      },
+      {
+        "domain": "ERA5T",
+        "gapFillDomain": "NEMSGLOBAL",
+        "timeResolution": "daily",
+        "codes": [
+          {
+            "code": 260,
+            "level": "2 m above gnd",
+            "aggregation": "sum"
+          }
+        ]
+      },
+      {
+        "domain": "ERA5T",
+        "gapFillDomain": "NEMSGLOBAL",
+        "timeResolution": "daily",
+        "codes": [
+          {
+            "code": 11,
+            "level": "2 m above gnd",
+            "aggregation": "mean"
+          }
+        ]
+      }
+    ]
+  }
+}
