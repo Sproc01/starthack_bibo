@@ -1,0 +1,6 @@
+[submodule "Syngenta_STARTHACK25"]
+	path = Syngenta_STARTHACK25
+	url = https://github.com/START-Hack/Syngenta_STARTHACK25
+[submodule "syngenta-start-global-hackathon-2025"]
+	path = syngenta-start-global-hackathon-2025
+	url = https://github.com/syngenta-digital/syngenta-start-global-hackathon-2025
